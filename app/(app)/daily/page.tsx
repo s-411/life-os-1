@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { formatDateInTimezone, getCurrentDateInTimezone } from '@/lib/utils/date';
+import { formatDateInTimezone, getCurrentDateStringInTimezone } from '@/lib/utils/date';
+import MITList from '@/components/daily/MITList';
 
 export default async function DailyTrackerPage() {
   const supabase = await createClient();
@@ -26,15 +27,26 @@ export default async function DailyTrackerPage() {
   // Get timezone from profile, fallback to UTC
   const userTimezone = profile.timezone || 'UTC';
 
-  // Calculate current date in user's timezone
-  const currentDate = getCurrentDateInTimezone(userTimezone);
+  // Get current date as YYYY-MM-DD string in user's timezone
+  const currentDate = getCurrentDateStringInTimezone(userTimezone);
 
-  // Format date as "Monday, January 30th, 2025"
+  // Format date as "Monday, January 30th, 2025" for display
   const formattedDate = formatDateInTimezone(
-    currentDate,
+    new Date(),
     userTimezone,
     'EEEE, MMMM do, yyyy'
   );
+
+  // Fetch MITs for current date
+  const { data: mits, error: mitsError } = await supabase
+    .from('mits')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('date', currentDate)
+    .order('created_at', { ascending: true });
+
+  // Handle error or null case
+  const initialMITs = mitsError ? [] : (mits || []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -45,8 +57,17 @@ export default async function DailyTrackerPage() {
           <p className="text-xl text-muted-foreground">{formattedDate}</p>
         </div>
 
-        {/* Content Grid - Ready for future sections */}
+        {/* Content Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* MITs Section */}
+          <div className="md:col-span-2 lg:col-span-3">
+            <MITList
+              initialMITs={initialMITs}
+              currentDate={currentDate}
+              userId={user.id}
+            />
+          </div>
+
           {/* Future content sections will be added here */}
         </div>
       </div>

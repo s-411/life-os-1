@@ -1,3 +1,5 @@
+import { Database } from './database.types';
+
 export interface Profile {
   id: string; // Corresponds to the UUID from Supabase
   first_name: string | null;
@@ -22,3 +24,6 @@ export interface ProfileUpdate {
   weight?: number | null;
   timezone?: string | null;
 }
+
+// MIT type from database
+export type MIT = Database['public']['Tables']['mits']['Row'];

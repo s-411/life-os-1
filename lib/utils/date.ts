@@ -129,3 +129,17 @@ export function isDateInDay(date: Date, timezone: string, targetDate?: Date): bo
   const dayEnd = getDayEndInTimezone(timezone, targetDate);
   return date >= dayStart && date <= dayEnd;
 }
+
+/**
+ * Get the current date as a YYYY-MM-DD string in a specific timezone
+ *
+ * @param timezone - IANA timezone identifier
+ * @returns Date string in YYYY-MM-DD format
+ *
+ * @example
+ * const dateStr = getCurrentDateStringInTimezone('America/New_York');
+ * console.log(dateStr); // '2025-01-30'
+ */
+export function getCurrentDateStringInTimezone(timezone: string): string {
+  return formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
+}
