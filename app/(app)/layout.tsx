@@ -1,12 +1,13 @@
 'use client'
 
 import { useAuth } from '@/lib/context/AuthContext'
-import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import Sidebar from '@/components/navigation/Sidebar'
+import BottomNav from '@/components/navigation/BottomNav'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading, logout } = useAuth()
+  const { user, loading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
@@ -17,7 +18,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#1a1a1a] text-[#e5e5e5]">
         <p>Loading...</p>
       </div>
     )
@@ -28,19 +29,26 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-border bg-background">
-        <div className="flex items-center justify-between px-6 py-4">
-          <h1 className="text-xl font-bold">Life OS</h1>
-          <div className="flex items-center gap-4">
-            <p className="text-sm text-muted-foreground">{user.email}</p>
-            <Button variant="outline" onClick={logout}>
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
-      <main>{children}</main>
+    <div className="min-h-screen bg-[#1a1a1a] text-[#e5e5e5]">
+      {/* Desktop: Sidebar Navigation (hidden on mobile) */}
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
+
+      {/* Desktop: Header Navigation Alternative (optional - commented out by default, use Sidebar instead) */}
+      {/* <div className="hidden md:block">
+        <Header />
+      </div> */}
+
+      {/* Main Content Area */}
+      <main className="md:ml-64 min-h-screen pb-16 md:pb-0">
+        {children}
+      </main>
+
+      {/* Mobile: Bottom Navigation (shown only on mobile) */}
+      <div className="md:hidden">
+        <BottomNav />
+      </div>
     </div>
   )
 }
