@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { calculateBMR, type BMRInput } from '@/src/lib/services/calculations'
+import { calculateBMR, type BMRInput } from '@/lib/services/calculations'
 import { Button } from '@/components/ui/button'
 import {
   Card,

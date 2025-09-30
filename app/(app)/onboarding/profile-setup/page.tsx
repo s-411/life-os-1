@@ -1,3 +1,5 @@
+'use client'
+
 import { ProfileSetupWizard } from '@/components/onboarding/ProfileSetupWizard'
 
 export default function ProfileSetupPage() {

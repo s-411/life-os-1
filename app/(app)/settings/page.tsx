@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useProfile } from '@/src/lib/hooks/useProfile'
+import { useProfile } from '@/lib/hooks/useProfile'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -16,7 +16,6 @@ import type { ProfileUpdate } from '@/types'
 
 export default function SettingsPage() {
   const { profile, loading, error, updateProfile } = useProfile()
-  const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [notification, setNotification] = useState<{
     type: 'success' | 'error'
@@ -62,7 +61,7 @@ export default function SettingsPage() {
         first_name: profile.first_name || '',
       })
     }
-    setIsEditing(false)
+    setNotification(null)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,7 +96,6 @@ export default function SettingsPage() {
 
       await updateProfile(updates)
       setNotification({ type: 'success', message: 'Profile updated successfully!' })
-      setIsEditing(false)
 
       // Auto-dismiss success notification after 3 seconds
       setTimeout(() => setNotification(null), 3000)
@@ -146,7 +144,6 @@ export default function SettingsPage() {
                   placeholder="John"
                   value={formData.first_name}
                   onChange={(e) => handleChange('first_name', e.target.value)}
-                  disabled={!isEditing}
                 />
               </div>
 
@@ -160,7 +157,6 @@ export default function SettingsPage() {
                   onChange={(e) =>
                     handleChange('gender', e.target.value as 'male' | 'female' | 'other')
                   }
-                  disabled={!isEditing}
                 >
                   <option value="">Select gender</option>
                   <option value="male">Male</option>
@@ -179,7 +175,6 @@ export default function SettingsPage() {
                   placeholder="170"
                   value={formData.height}
                   onChange={(e) => handleChange('height', e.target.value)}
-                  disabled={!isEditing}
                 />
               </div>
 
@@ -193,7 +188,6 @@ export default function SettingsPage() {
                   placeholder="70"
                   value={formData.weight}
                   onChange={(e) => handleChange('weight', e.target.value)}
-                  disabled={!isEditing}
                 />
               </div>
 
@@ -206,7 +200,6 @@ export default function SettingsPage() {
                   placeholder="2000"
                   value={formData.bmr}
                   onChange={(e) => handleChange('bmr', e.target.value)}
-                  disabled={!isEditing}
                 />
               </div>
 
@@ -218,7 +211,6 @@ export default function SettingsPage() {
                   type="text"
                   value={formData.timezone}
                   onChange={(e) => handleChange('timezone', e.target.value)}
-                  disabled={!isEditing}
                 />
               </div>
 
@@ -237,26 +229,18 @@ export default function SettingsPage() {
 
               {/* Action Buttons */}
               <div className="flex gap-2">
-                {!isEditing ? (
-                  <Button type="button" onClick={() => setIsEditing(true)} className="flex-1">
-                    Edit Profile
-                  </Button>
-                ) : (
-                  <>
-                    <Button type="submit" className="flex-1" disabled={isSaving}>
-                      {isSaving ? 'Saving...' : 'Save Changes'}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleCancel}
-                      className="flex-1"
-                      disabled={isSaving}
-                    >
-                      Cancel
-                    </Button>
-                  </>
-                )}
+                <Button type="submit" className="flex-1" disabled={isSaving}>
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  className="flex-1"
+                  disabled={isSaving}
+                >
+                  Cancel
+                </Button>
               </div>
             </div>
           </form>

@@ -89,12 +89,14 @@ export function ProfileSetupWizard({ className, ...props }: React.ComponentProps
       })
 
       if (insertError) {
+        console.error('Supabase upsert error:', insertError)
         throw insertError
       }
 
       // Redirect to daily page
       router.push('/daily')
     } catch (err) {
+      console.error('Profile save error:', err)
       setError(err instanceof Error ? err.message : 'Failed to save profile')
     } finally {
       setIsLoading(false)
