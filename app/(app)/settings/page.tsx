@@ -13,6 +13,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import type { ProfileUpdate } from '@/types'
+import { TIMEZONES } from '@/lib/constants/timezones'
+import { formatDateInTimezone, getBrowserTimezone } from '@/lib/utils/date'
 
 export default function SettingsPage() {
   const { profile, loading, error, updateProfile } = useProfile()
@@ -31,19 +33,39 @@ export default function SettingsPage() {
     first_name: '',
   })
 
+  const [currentTimePreview, setCurrentTimePreview] = useState('')
+
   // Load profile data into form when it's available
   useEffect(() => {
     if (profile) {
+      const tz = profile.timezone || getBrowserTimezone()
       setFormData({
         bmr: profile.bmr?.toString() || '',
         gender: (profile.gender as 'male' | 'female' | 'other') || '',
         height: profile.height?.toString() || '',
         weight: profile.weight?.toString() || '',
-        timezone: profile.timezone || '',
+        timezone: tz,
         first_name: profile.first_name || '',
       })
     }
   }, [profile])
+
+  // Update time preview when timezone changes
+  useEffect(() => {
+    if (formData.timezone) {
+      const updatePreview = () => {
+        const preview = formatDateInTimezone(
+          new Date(),
+          formData.timezone,
+          'EEEE, MMMM d, yyyy h:mm:ss a zzz'
+        )
+        setCurrentTimePreview(preview)
+      }
+      updatePreview()
+      const interval = setInterval(updatePreview, 1000)
+      return () => clearInterval(interval)
+    }
+  }, [formData.timezone])
 
   const handleChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -206,12 +228,23 @@ export default function SettingsPage() {
               {/* Timezone */}
               <div className="grid gap-2">
                 <Label htmlFor="timezone">Timezone</Label>
-                <Input
+                <select
                   id="timezone"
-                  type="text"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
                   value={formData.timezone}
                   onChange={(e) => handleChange('timezone', e.target.value)}
-                />
+                >
+                  {TIMEZONES.map((tz) => (
+                    <option key={tz.value} value={tz.value}>
+                      {tz.label}
+                    </option>
+                  ))}
+                </select>
+                {currentTimePreview && (
+                  <p className="text-sm text-muted-foreground">
+                    Current time: <span className="font-medium">{currentTimePreview}</span>
+                  </p>
+                )}
               </div>
 
               {/* Notification */}

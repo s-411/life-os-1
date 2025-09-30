@@ -15,6 +15,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { TIMEZONES } from '@/lib/constants/timezones'
+import { getBrowserTimezone } from '@/lib/utils/date'
 
 interface ProfileFormData {
   bmr: string
@@ -33,7 +35,7 @@ export function ProfileSetupWizard({ className, ...props }: React.ComponentProps
     gender: '',
     height: '',
     weight: '',
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    timezone: getBrowserTimezone(),
   })
 
   const handleChange = (field: keyof ProfileFormData, value: string) => {
@@ -197,15 +199,20 @@ export function ProfileSetupWizard({ className, ...props }: React.ComponentProps
               {/* Timezone */}
               <div className="grid gap-2">
                 <Label htmlFor="timezone">Timezone</Label>
-                <Input
+                <select
                   id="timezone"
-                  type="text"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
                   value={formData.timezone}
                   onChange={(e) => handleChange('timezone', e.target.value)}
-                  readOnly
-                />
+                >
+                  {TIMEZONES.map((tz) => (
+                    <option key={tz.value} value={tz.value}>
+                      {tz.label}
+                    </option>
+                  ))}
+                </select>
                 <p className="text-xs text-muted-foreground">
-                  Automatically detected from your browser
+                  Your timezone is automatically detected, but you can change it
                 </p>
               </div>
 
